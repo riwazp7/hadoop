@@ -44,10 +44,11 @@ public class AdIdReducer extends Reducer<Text, Text, Text, Text> {
             Integer totalImpressions = entry.getValue();
             Integer clickCount = referrerClickCount.get(referrer);
             String outputKey = String.format("%s, %s", adId, referrer);
+            String output = (clickCount == null) ?
+                    "0" : String.valueOf((double) clickCount / (double) totalImpressions);
             context.write(
                     new Text(outputKey),
-                    new Text((String.valueOf((double) clickCount/ (double) totalImpressions))));
+                    new Text(output + " " + clickCount + " " + totalImpressions));
         }
-        System.out.println("1 Reduce Finis");
     }
 }
