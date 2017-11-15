@@ -1,5 +1,5 @@
 /**
- * Created by Riwaz on 11/13/17.
+ * BatchAdsProcessor.java
  */
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -11,10 +11,13 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class BatchAdsProcessor {
 
-    public static final String separator = " ";
-    public static final String clickMarker = "@-@-@-@CLCK@-@-@-@";
+    static final String separator = " ";
+    static final String clickMarker = "@-@CLCK@-@"; /////////
 
     public static void main (String[] args) throws Exception {
+        if (args.length != 3) {
+            System.out.println("Args: [impression log path] [clicks log path] [output path]");
+        }
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf, "ClickRateProcessor");
         job.setJarByClass(BatchAdsProcessor.class);

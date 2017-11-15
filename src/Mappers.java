@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 
-public class Mappers {
+class Mappers {
 
     private static final String referrer = "referrer";
     private static final String adId = "adId";
