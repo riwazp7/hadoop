@@ -5,7 +5,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
-import java.util.Random;
 
 public class Mappers {
 
@@ -13,12 +12,9 @@ public class Mappers {
     private static final String adId = "adId";
     private static final String impressionId = "impressionId";
 
-    private static final Random rdm = new Random();
-
     public static class ImpressionsMapper extends Mapper<LongWritable, Text, Text, Text> {
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            if (rdm.nextInt(100) > 8) return;
             JsonObject jsonObject = new JsonParser().parse(value.toString()).getAsJsonObject();
             String emitValue = String.format(
                     "%s%s%s",

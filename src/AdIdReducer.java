@@ -8,34 +8,31 @@ import java.util.Map;
 
 public class AdIdReducer extends Reducer<Text, Text, Text, Text> {
 
-    private Map<String, String> impressionToReferrer;
-    private Map<String, Integer> referrerImpressionCount;
-    private Map<String, Integer> referrerClickCount;
-    private ArrayList<String> clicksList;
-
-    @Override
-    protected void setup(Context context) throws IOException, InterruptedException {
-        impressionToReferrer = new HashMap<>();
-        referrerImpressionCount = new HashMap<>();
-        referrerClickCount = new HashMap<>();
-        clicksList = new ArrayList<>();
-    }
-
     @Override
     protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+	Map<String, String> impressionToReferrer = new HashMap<>();
+        Map<String, Integer> referrerImpressionCount = new HashMap<>();
+        Map<String, Integer> referrerClickCount = new HashMap<>();
+        ArrayList<String> clicksList = new ArrayList<>();
+	
+	
         for (Text value : values) {
            String[] tokens = value.toString().split(BatchAdsProcessor.separator);
            if (tokens[1].equals(BatchAdsProcessor.clickMarker)) {
                clicksList.add(tokens[0]);
            } else {
                impressionToReferrer.put(tokens[0], tokens[1]);
-               referrerImpressionCount.merge(tokens[1], 1, (a, b) -> a + b);
+               Integer referrerCount = referrerImpressionCount.get(tokens[1]);
+	       if (referrerCount == null) referrerImpressionCount.put(tokens[1], 1);
+	       else referrerImpressionCount.put(tokens[1], referrerCount + 1);
            }
         }
 
         for (String clickedImpression : clicksList) {
             String referrer = impressionToReferrer.get(clickedImpression);
-            referrerClickCount.merge(referrer, 1, (a, b) -> a + b);
+            Integer clickCount = referrerClickCount.get(referrer);
+	    if (clickCount == null) referrerClickCount.put(referrer, 1);
+	    else referrerClickCount.put(referrer, clickCount + 1);
         }
 
         String adId = key.toString();
@@ -43,12 +40,12 @@ public class AdIdReducer extends Reducer<Text, Text, Text, Text> {
             String referrer = entry.getKey();
             Integer totalImpressions = entry.getValue();
             Integer clickCount = referrerClickCount.get(referrer);
-            String outputKey = String.format("%s, %s", adId, referrer);
+            String outputKey = String.format("[%s, %s]", referrer, adId);
             String output = (clickCount == null) ?
                     "0" : String.valueOf((double) clickCount / (double) totalImpressions);
             context.write(
                     new Text(outputKey),
-                    new Text(output + " " + clickCount + " " + totalImpressions));
+                    new Text(output));
         }
     }
 }

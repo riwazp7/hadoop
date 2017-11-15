@@ -11,7 +11,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class BatchAdsProcessor {
 
-    public static final String separator = "\\.";
+    public static final String separator = " ";
     public static final String clickMarker = "@-@-@-@CLCK@-@-@-@";
 
     public static void main (String[] args) throws Exception {
