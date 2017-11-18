@@ -27,8 +27,7 @@ public class AdIdReducer extends Reducer<Text, Text, Text, Text> {
         }
 
         for (String clickedImpression : clicksList) {
-            String referrer = impressionToReferrer.get(clickedImpression);
-            referrerClickCount.merge(referrer, 1, (a, b) -> a + b);
+            referrerClickCount.merge(impressionToReferrer.get(clickedImpression), 1, (a, b) -> a + b);
         }
 
         for (Map.Entry<String, Integer> entry : referrerImpressionCount.entrySet()) {
